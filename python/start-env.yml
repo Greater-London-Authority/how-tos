@@ -1,0 +1,12 @@
+name: start-env
+channels:
+  - defaults
+dependencies:
+  - jupyter
+  - matplotlib
+  - numpy
+  - pandas
+  - python
+  - scikit-learn
+  - scipy
+  - spyder
