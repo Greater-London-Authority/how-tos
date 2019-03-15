@@ -1,4 +1,4 @@
-*Please edit and update this page to improve the resource*
+*Please add to and edit this page to improve the resource*
 
 ## Suggested [DataCamp](https://www.datacamp.com/) track for getting started with R 
 The following courses will get you started in using R for data handling and analysis.  This list focusses on the tidyverse packages which are intuitive to learn and should produce easily readable code. Numbers in brackets show (course time, cumulative time)
