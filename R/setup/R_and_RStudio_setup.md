@@ -1,6 +1,6 @@
 ﻿*Please add to and edit this page to improve the resource*
 
-# How to get started with R and RStudio on GLA machines
+# How to get set up with R and RStudio on GLA machines
 
 To downlad and install R (the programming language) and RStudio (a nice interface for working with R):
 
