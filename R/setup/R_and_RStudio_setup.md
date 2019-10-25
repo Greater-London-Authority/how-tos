@@ -16,5 +16,5 @@ To install packages from CRAN:
 1) Download the [Rprofile file](.Rprofile) and save it to your M drive (not in any sub-folders).  This contains instructions to R on where to save any packages you install and can be edited using notepad.  The Rprofile file must be stored in the top level of your M drive so that R can find it when it starts up
 2) If you have already opended RStudio, close it and reopen it as R only reads the .Rprofile file at startup
 2) To install a package, open RStudio and find the 'Console' which should be at the bottom left of the window
-3) Type install.packages("package_name"). For example, to install the tidyverse package type install.packages("tidyverse") and hit enter
+3) Type `install.packages("package_name")`. For example, to install the tidyverse package type `install.packages("tidyverse")` and hit enter
 
