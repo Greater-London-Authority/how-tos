@@ -1,1 +1,1 @@
-.libPaths("M:/r_library")
+.libPaths("M:/R_library")
