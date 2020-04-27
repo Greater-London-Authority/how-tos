@@ -1,29 +1,29 @@
 # Configure dockerized WSO2 API manager v3.0 with Identity Server as Key Manager and API Manager Analytics Support
 ![alt text](images/WSO2_docker.png)
 
-In order to be able to use WSO2 API manager with all its modules, we must change the default configuration using a Docker host volumes.
+In order to be able to use WSO2 API manager docker-compose with all its modules, we must change the default configuration in docker host volumes. In addition, we must add jar file for mysql database to the cotainer and update other configurations in WSO2 APIM carbon.
 
-This document will describe the process of configuring WSO2 APIM using a docker host volumes. 
+This document will describe the process of configuring WSO2 APIM docker host volumes and other parts of WSO2 APIM. 
 
 > Volumes are directories (or files) that are outside of the default Union File System (Docker layer) and exist as normal directories and files on the host filesystem.
 > [View more info about volumes.](https://blog.container-solutions.com/understanding-volumes-docker "Named link title"). 
 
-The updates you will need to do are: 
-1. Update Keystores with the SSL/TLS certificate
-2. Update configuration files in container volumes
+The updates you will need to do, are listed below: 
+1. Update Keystores with the SSL/TLS certificate in docker volume
+2. Update configuration files in docker volumes
 3. Add jar file for mysql database to APIM and IS containers
 4. Update callback URL in carbon
 
-### Update keystore with SSL/TLS certificate
+## 1.  Update keystore with SSL/TLS certificate
 In order to be able to use WSO2 installed on the server, we must update keystores with TLS/SSL certificate for the domain you set up for your WSO2 APIM. 
 
 #### Step 1:  Set up the domain used for WSO2 APIM
 1. Get the domain used for WSO2 APIM  - I used [GoDaddy](https://dcc.godaddy.com/domains/ "Named link title") website
 2. Create new hosted zone in AWS Route53 service for the domain acquired in the previous step
-3. Update DNS info of the domain in [GoDaddy](https://dcc.godaddy.com/domains/ "Named link title")
-    1. Go to your domain's settings
+3. Update DNS info of the domain in [GoDaddy](https://dcc.godaddy.com/domains/ "Named link title") by following steps below:
+    1. Go to your domain's settings in GoDaddy
     2. Click on "Manage DNS"
-    3. Edit Nameservers 
+    3. Edit Nameservers:
         - Click on checkbox "I'll use my own nameservers"
         - Add nameservers listed in AWS Route53 Hosted zone details. For example:
             - ns-xxxx.awsdns-xx.co.uk
@@ -58,24 +58,24 @@ In order to be able to use WSO2 installed on the server, we must update keystore
 
     mkdir ssl
 
-    keytool -certreq -file ssl/newcertreq.csr -keystore wso2carbonkeystore.jks
+    keytool -certreq -file ssl/newcertreq.csr -keystore wso2carbon.jks
     ```
 3. Get free TLS/SSL certificate from [SSL for free website](https://sslforfree.com)
     - Enter your domain name and click on "Create Free SSL Certificate"
     - If you use domain without "www", click on "Add/Edit Domains" and remove domain with www prefix in the box
     - Click on "Manual Verification (DNS)"
     - Click on "Manually Verify Domain"
-    - Create TXT record in AWS Route53 hosted zone created for your domain
-        - Click on Create Record Set
+    - Create TXT record in AWS Route53 hosted zone and fill in the information from sslforfree website (see the picture below) as follow:
+        - Click on Create Record Set in AWS Route53 Hosted zone for your domain
         - TXT record will have name, TTL and value copied from sslforfreee website (see the image below):
             - Name: _acme-challenge.your-domain-name
             - Type: "TXT - Text"
             - TTL(Seconds): 1
             - Value: JPh8FSV1yfERXyhak3AYB8Kuq6vrom4f5GMxN1aRduE  
 ![alt text](images/SSLTXT_record.png)
-    - Once the TXT record is created in AWS Route 53 hosted zone you need to SSLforfree website and wait for few minutes
+    - Once the TXT record is created in AWS Route 53 hosted zone you need to go to SSLforfree website and wait for few minutes
     - Verify TXT record by clicking on the link in SSLforfree website saying "Verify _acme-challenge.your-domain-name"
-    - Once there are no errors and the TXT record is verified check the checkbox saying “ I have My Own CSR”.
+    - Once there are no errors and the TXT record is verified check the checkbox saying "I have My Own CSR".
     - Copy the text from .csr file created in second point to the textbox with caption "Enter your CSR here"
     - Delete word ‘New' at the beginning and at the end of the certificate request (see below)
 
@@ -130,7 +130,7 @@ In order to be able to use WSO2 installed on the server, we must update keystore
     keytool -import -alias wso2carbon -file ssl/wso2carbon.pem -keystore client-truststore.jks -storepass wso2carbon
     ```
 
-    If the trustore contains wso2carbon.jks keystore, we must delete it and import the new wso2carbon.jks keystore using comand below.
+    If the trustore contains wso2carbon.jks keystore, you won't be allowed to import wso2carbon.jks. Thus, we must delete it using command below and afterwards we could import the new wso2carbon.jks keystore. 
 
     ```bash
     sudo su "dockerusername"
@@ -187,7 +187,7 @@ In order to be able to use WSO2 installed on the server, we must update keystore
 
     keytool -list -keystore wso2carbon.jks -v 
     ```
-#### Step 4: Restart all updated containers updated in the previous steps
+#### Step 4: Restart all containers updated in the previous steps
 1. Restart container for APIM, IS as KM and Analytics Dashboard
     ```bash
     docker ps
@@ -201,7 +201,7 @@ In order to be able to use WSO2 installed on the server, we must update keystore
     docker logs "container ID"
     ```
 
-### Update configuration files in container volumes
+## 2. Update configuration files in container volumes
 Configuration files that are going to be udpated are in the different locations:
 1. Update config file for WSO2 APIM container
 ```bash
@@ -238,7 +238,9 @@ url = "https://your-domain-name:${mgt.transport.https.port}/devportal"
 2. Update config file for WSO2 Identity server container
 ```bash
 sudo su "dockerusername"
+
 cd ~/docker-apim/docker-compose/apim-is-as-km-with-analytics/is-as-km/config/repository/conf
+
 sudo vim deployment.toml
 ```
 Update the config file with the following:
@@ -285,7 +287,8 @@ auth.configs:
     storeUrl: https://usplondon.uk:9443
 ```
 
-### Add jar file for mysql database
+## 3. Add jar file for mysql database
+Download jar file for mysql database from website to temp file on your server. Unzip it and copy it to the folder within WSO2 APIM and WSO2 IS containers.  
 ```bash
 sudo su "dockerusername"
 
@@ -304,7 +307,7 @@ docker cp mysql-connector-java-8.0.19\mysql-connector-java-8.0.19.jar name-for-a
 docker cp mysql-connector-java-8.0.19\mysql-connector-java-8.0.19.jar name-for-is-as-km-container:/home/wso2docker/wso2is-km-5.9.0/repository/components/lib
 ```
 
-### Update callback URL in carbon
+## 4. Update callback URL in carbon
 1. Log into carbon as admin - https://your-domain-name:9443/carbon
 2. Click on Main >> Service Providers >> List
 3. Edit admin_admin_store and admin_admin_publisher service provider

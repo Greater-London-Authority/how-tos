@@ -1,7 +1,7 @@
 # Installing dockerized WSO2 API manager v3.0 with Identity Server as Key Manager and API Manager Analytics Support on Ubuntu 18.0 server on AWS.
 ![alt text](images/WSO2_docker.png)
 
-WSO2 API Manager (APIM) can be easily installed using Docker containers by following the steps below.
+WSO2 API Manager (APIM) can be easily setup in AWS EC2 Ubuntu server using Docker containers by following the steps below.
 
 ### Step 1: Create AWS EC2 instance - Ubuntu server 
 - Launch new instance
@@ -23,9 +23,13 @@ sudo apt-get install curl
 ### Step 3: Install docker
 ```bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
 sudo apt-get update
+
 apt-cache policy docker-ce
 ```
 
@@ -58,11 +62,11 @@ docker.service - Docker Application Container Engine
 ```
 
 ### Step 4: Install Docker-compose
-We’ll check the [current release](https://github.com/docker/compose/releases "Named link title") and if necessary, update it in the command below:
+You need to check the [current release](https://github.com/docker/compose/releases "Named link title") of docker-compose and if necessary, update it in the command below. This is the command for installing docker-compose version 1.25.5:
 ```bash
 sudo curl -L https://github.com/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 ```
-Next we will set the permission and verify that the installation was successful by checking the version:
+Next, you must set the permission and verify that the installation was successful by checking the version:
 ```bash
 sudo chmod +x /usr/local/bin/docker-compose
 
@@ -74,7 +78,7 @@ docker-compose version 1.25.5, build a133471
 ```
 
 ### Step 5: Create user on Ubuntu server used by docker
-Create user with username and password and fill all necessary details:
+Create user that will be used for all necessary operations in with docker. You must fill in username, password and all another details that you will be asked.
 ```bash
 sudo adduser "dockerusername"
 sudo su "dockerusername"
@@ -82,14 +86,16 @@ sudo usermod -aG sudo "dockerusername"
 sudo usermod -aG docker "dockerusername"
 Id -nG
 ```
-The output should be:
+In order to make sure that the user is setup as sudoer and also for docker, the output should be:
 ```bash
 "dockerusername" sudo docker
 ```
 
-### Step 6: Install WSO2 APIM
-Clone the application from github. Make sure that you are signed under username created in the step 5.
+### Step 6: Install WSO2 APIM with analytics and identity server as key management.
+Clone the application from github. Make sure that you are signed under "dockerusername" created in the step 5.
 ```bash
+sudo su "dockerusername"
+
 cd ~
 
 git clone https://github.com/wso2/docker-apim
@@ -107,16 +113,16 @@ It will deploy the required containers for WSO2 APIM. The deployed containers ar
 
 Access the WSO2 API manager web UIs using the below URLs via a web browser.
 ```bash
-https://localhost:9443/publisher
-https://localhost:9443/devportal
-https://localhost:9443/admin
-https://localhost:9443/carbon
+https://ip-of-your-aws-ec2-instance:9443/publisher
+https://ip-of-your-aws-ec2-instance:9443/devportal
+https://ip-of-your-aws-ec2-instance:9443/admin
+https://ip-of-your-aws-ec2-instance:9443/carbon
 ```
 
 Please note that API Gateway will be available on following ports
 ```bash
-https://localhost:8243
-https://localhost:8280
+https://ip-of-your-aws-ec2-instance:8243
+https://ip-of-your-aws-ec2-instance:8280
 ```
 
 Once WSO2 APIM docker containers are installed on the server, you will need to update the configuration of containers. See the document called [Configure dockerized WSO2 API manager v3.0 product on Ubuntu 18.0 server on AWS.](WSO2_apim_configuration.md "Named link title")
