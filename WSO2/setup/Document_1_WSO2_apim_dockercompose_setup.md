@@ -125,4 +125,4 @@ https://ip-of-your-aws-ec2-instance:8243
 https://ip-of-your-aws-ec2-instance:8280
 ```
 
-Once WSO2 APIM docker containers are installed on the server, you will need to update the configuration of containers. See the document called [Configure dockerized WSO2 API manager v3.0 product on Ubuntu 18.0 server on AWS.](WSO2_apim_configuration.md "Named link title")
+Once WSO2 APIM docker containers are installed on the server, you will need to update the configuration of containers. See the document called [Configure dockerized WSO2 API manager v3.0 product on Ubuntu 18.0 server on AWS.](Document_2_WSO2_apim_configuration.md "Named link title")
