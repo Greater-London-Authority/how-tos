@@ -1,0 +1,7 @@
+{
+    "consumerKey" :"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "consumerSecret" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "token_url": "https://usplondon.uk:8243/token",
+    "endpoint": "https://usplondon.uk:8243/DS004032/SmartParking/Observations/1.0.0",
+    "source" : "/Datastreams?$filter=ObservedProperty/name%20eq%20%27Number%20of%20free%20bays%27%20and%20Sensor/name%20eq%20%27Lot%20number%201%27&$expand=Observations($select=resultTime,result;$top=1;$orderby=resultTime%20desc)&$select=Observations,name"
+}
